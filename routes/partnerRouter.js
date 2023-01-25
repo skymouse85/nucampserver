@@ -1,5 +1,5 @@
 const express = require('express');
-const { response } = require('../app');
+// const { response } = require('../app');
 const Partner = require('../models/partner');
 
 const partnerRouter = express.Router();
