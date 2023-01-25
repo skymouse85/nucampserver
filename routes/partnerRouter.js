@@ -10,7 +10,7 @@ partnerRouter.route('/')
             .then(partners => {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
-                res.json(campsites);
+                res.json(partners);
             })
             .catch(err => next(err));
     })
