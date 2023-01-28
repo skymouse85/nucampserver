@@ -1,8 +1,11 @@
 const express = require('express');
 // const { response } = require('../app');
+const bodyParser = require('body-parser');
 const Campsite = require('../models/campsite');
 
 const campsiteRouter = express.Router();
+
+campsiteRouter.use(bodyParser.json());
 
 // handles Get, Put, Post, Delete endpoint for any campsites path
 
