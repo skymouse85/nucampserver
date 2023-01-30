@@ -42,3 +42,17 @@ exports.jwtPassport = passport.use(
 );
 
 exports.verifyUser = passport.authenticate('jwt', { session: false });
+
+// export out a function called verifyAdmin with params req, res, next from express
+exports.verifyAdmin = (req, res, next) => {
+    // check if auser has admin true req.user.admin
+    if (req.user.admin) {
+        return next();
+    } else {
+        // if they do, return next()
+        // else create an error, set err status, & return next(err)
+        const err = new Error(`You are not authorized`);
+        err.status = 403;
+        return next(err);
+    }
+}

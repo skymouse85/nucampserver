@@ -9,7 +9,7 @@ const campsiteRouter = express.Router();
 
 campsiteRouter.route('/')
 
-    .get((req, res, next) => {
+    .get(authenticate.verifyUser, (req, res, next) => {
         Campsite.find()
             .populate('comments.author')
             .then(campsites => {
@@ -19,7 +19,7 @@ campsiteRouter.route('/')
             })
             .catch(err => next(err));
     })
-    .post(authenticate.verifyUser, (req, res, next) => {
+    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Campsite.create(req.body)
             .then(campsite => {
                 console.log('Campsite Created ', campsite);
@@ -33,7 +33,7 @@ campsiteRouter.route('/')
         res.statusCode = 403;
         res.end('PUT operation not supported on /campsites');
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Campsite.deleteMany()
             .then(response => {
                 res.statusCode = 200;
@@ -58,7 +58,7 @@ campsiteRouter.route('/:campsiteId')
     .post(authenticate.verifyUser, (req, res) => {
         res.end(`POST operation not supported on /campsites/${req.params.campsiteId}`);
     })
-    .put(authenticate.verifyUser, (req, res, next) => {
+    .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Campsite.findByIdAndUpdate(req.params.campsiteId, {
             $set: req.body
         }, { new: true })
@@ -70,7 +70,7 @@ campsiteRouter.route('/:campsiteId')
             .catch(err => next(err));
 
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Campsite.findByIdAndDelete(req.params.campsiteId)
             .then(campsite => {
                 res.statusCode = 200;
@@ -90,7 +90,7 @@ campsiteRouter.route('/:campsiteId/comments')
                     res.setHeader('Content-Type', 'application/json');
                     res.json(campsite.comments);
                 } else {
-                    err = new Error(`Campsite ${req.params.campsiteId} not found`);
+                    const err = new Error(`Campsite ${req.params.campsiteId} not found`);
                     err.status = 404;
                     return next(err);
                 }
@@ -122,7 +122,7 @@ campsiteRouter.route('/:campsiteId/comments')
         res.statusCode = 403;
         res.end(`PUT operation not supported on /campsites/${req.params.campsiteId}/comments`);
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Campsite.findById(req.params.campsiteId)
             .then(campsite => {
                 if (campsite) {
